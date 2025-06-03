@@ -7,7 +7,7 @@
 
 <script setup>
 // Import the Home component
-import Home from './components/Home.vue'
+import Home from './components/home.vue'
 </script>
 
 <style>
