@@ -10,7 +10,7 @@
 
       <nav class="menu1">
         <!-- Use router-link for SPA navigation -->
-    <router-link to="home">Sākums</router-link>
+    <router-link to="/">Sākums</router-link>
     <router-link to="/about">Par mums</router-link>
     <router-link to="/contacts">Kontakti</router-link>
     <router-link to="/cards">Kartiņas</router-link>

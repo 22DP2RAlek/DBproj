@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Navigation menu -->
-    <section class="p-menu1">
+    <!-- <section class="p-menu1">
       <nav id="navbar" class="navigation" role="navigation">
         <input id="toggle1" type="checkbox" />
         <label class="hamburger1" for="toggle1">
@@ -17,7 +17,7 @@
           <router-link to="/cards">Kartiņas</router-link>
         </nav>
       </nav>
-    </section>
+    </section> -->
 
     <!-- Header -->
     <header>

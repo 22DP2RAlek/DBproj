@@ -1,22 +1,4 @@
 <template>
-  <section class="p-menu1">
-    <nav id="navbar" class="navigation" role="navigation">
-      <input id="toggle1" type="checkbox" />
-      <label class="hamburger1" for="toggle1">
-        <div class="top"></div>
-        <div class="meat"></div>
-        <div class="bottom"></div>
-      </label>
-
-      <nav class="menu1">
-        <a href="/">Sākums</a>
-        <a href="#">Par mums</a>
-        <a href="#">Kontakti</a>
-        <a href="/cards">Kartiņas</a>
-      </nav>
-    </nav>
-  </section>
-
   <div class="card-container">
     <div class="card" v-for="(city, index) in cards" :key="index">
       <img :src="city.image" :alt="city.name" />
@@ -30,6 +12,9 @@
 </template>
 
 <script setup>
+// Make sure this path is correct relative to this file
+import '../assets/cards.css'
+
 const cards = [
   {
     name: 'Jelgava',
@@ -48,5 +33,3 @@ const cards = [
   },
 ]
 </script>
-
-<style src="./card.css"></style>
