@@ -11,10 +11,10 @@
         </label>
 
         <nav class="menu1">
-          <a href="index.html">Sākums</a>
+          <router-link to="/home">Sākums</router-link>
           <a href="#">Par mums</a>
           <a href="#">Kontakti</a>
-          <a href="card.html">Kartiņas</a>
+          <router-link to="/cards">Kartiņas</router-link>
         </nav>
       </nav>
     </section>
