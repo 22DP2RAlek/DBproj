@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 // Import views that exist
 import Home from '../views/home.vue'
 import Cards from '../views/cards.vue'
+import Login from '@/views/login.vue'
 
 const routes = [
   {
@@ -13,8 +14,14 @@ const routes = [
   {
     path: '/cards',
     name: 'cards',
-    component: Cards,
+    component: () => import('../views/cards.vue'),
   },
+  {
+  path: '/login',
+  name: 'login',
+  component: () => import('@/views/login.vue')
+}
+
 ]
 
 const router = createRouter({
@@ -23,3 +30,4 @@ const router = createRouter({
 })
 
 export default router
+
