@@ -20,6 +20,7 @@
         <router-link to="/">Sākums</router-link>
         <router-link to="/about">Par mums</router-link>
         <router-link to="/cards">Kartiņas</router-link>
+        <router-link to="/map">Karte</router-link>
       </nav>
     </nav>
   </section>

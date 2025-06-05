@@ -11,7 +11,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import '../login.css' // 🔗 Import the CSS file
+import '../assets/login.css' // 🔗 Import the CSS file
 
 const username = ref('')
 const password = ref('')
