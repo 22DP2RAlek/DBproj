@@ -7,6 +7,7 @@
   padding: 0 20px;
   background-color: #333; /* dark background for header */
   height: 60px; /* fixed height for header */
+  z-index: 2100;
 }
 
 /* Left buttons (Login/Register) */
@@ -40,7 +41,7 @@
   display: grid;
   grid-template-rows: repeat(3, 1fr);
   justify-items: center;
-  z-index: 130;
+  z-index: 2000;
 }
 
 /* Hamburger bars */

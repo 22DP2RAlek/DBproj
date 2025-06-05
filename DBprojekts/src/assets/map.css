@@ -1,0 +1,6 @@
+#map {
+  width: 100%;
+  height: calc(100vh - 60px); /* full viewport height minus header */
+  position: relative;
+  z-index: 1000; /* below header and hamburger */
+}
