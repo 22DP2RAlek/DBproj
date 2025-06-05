@@ -1,90 +1,114 @@
-/* Hamburger menu styles for screens <= 768px */
-@media (max-width: 768px) {
+/* Navigation container */
 .navigation {
   position: relative;
   display: flex;
-  justify-content: space-between; /* pushes children to edges */
+  justify-content: space-between; /* left-buttons left, hamburger right */
   align-items: center;
-  padding: 0 20px; /* add some horizontal padding */
+  padding: 0 20px;
+  background-color: #333; /* dark background for header */
+  height: 60px; /* fixed height for header */
 }
-  /* Hamburger icon */
-  .hamburger1 {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    height: 45px;
-    width: 40px;
-    display: grid;
-    grid-template-rows: repeat(3, 1fr);
-    justify-items: center; /* centers the bars inside the hamburger container */
-    z-index: 120;
-    margin: 0; /* remove margin to avoid shifting */
-  }
 
-  .hamburger1 div {
-    background-color: white;
-    width: 40px;
-    height: 5px;
-    margin-top: 7px;
-    transition: all 0.2s ease-in-out;
-  }
+/* Left buttons (Login/Register) */
+.left-buttons {
+  display: flex;
+  gap: 15px;
+}
 
-  #toggle1 {
-    display: none;
-  }
+/* Login/Register buttons */
+.left-buttons .btn {
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-family: 'Oswald', sans-serif;
+  padding: 10px 15px;
+  transition: color 0.3s ease;
+}
 
-  #toggle1:checked + .hamburger1 .top {
-    transform: rotate(-45deg);
-    margin-top: 22.5px;
-  }
+/* Keep login/register plain white, no background, underline on hover */
+.left-buttons .btn:hover {
+  text-decoration: underline;
+  color: #ddd;
+}
 
-  #toggle1:checked + .hamburger1 .meat {
-    transform: rotate(45deg);
-    margin-top: -5px;
-  }
+/* Hamburger icon container */
+.hamburger1 {
+  position: relative;
+  width: 40px;
+  height: 35px;
+  cursor: pointer;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  justify-items: center;
+  z-index: 130;
+}
 
-  #toggle1:checked + .hamburger1 .bottom {
-    transform: scale(0);
-  }
+/* Hamburger bars */
+.hamburger1 div {
+  width: 35px;
+  height: 4px;
+  background-color: white;
+  margin: 5px 0;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
 
-  #toggle1:checked ~ .menu1 {
-    height: 340px;
-  }
+/* Hide checkbox */
+#toggle1 {
+  display: none;
+}
 
-  /* Collapsible menu */
-  .menu1 {
-    width: 100%;
-    background-color: #333;
-    margin: 0;
-    display: grid;
-    grid-template-rows: 1fr repeat(4, 0.5fr);
-    grid-row-gap: 25px;
-    padding: 0;
-    list-style: none;
-    text-align: center;
-    height: 0;
-    overflow: hidden;
-    transition: height 0.4s ease;
-    z-index: 120;
-  }
+/* Hamburger animation when toggled */
+#toggle1:checked + .hamburger1 .top {
+  transform: rotate(-45deg) translate(-6px, 6px);
+}
 
-  .menu1 a:first-child {
-    margin-top: 40px;
-  }
+#toggle1:checked + .hamburger1 .meat {
+  opacity: 0;
+}
 
-  .menu1 a:last-child {
-    margin-bottom: 40px;
-  }
+#toggle1:checked + .hamburger1 .bottom {
+  transform: rotate(45deg) translate(-6px, -6px);
+}
 
-  .link1 {
-    width: 100%;
-    padding: 10px 0;
-    font: 700 20px 'Oswald', sans-serif;
-  }
+/* Dropdown menu styles */
+.menu1 {
+  position: absolute;
+  top: 60px; /* just below navbar */
+  right: 0;
+  width: 200px;
+  background-color: #333; /* match nav background */
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 120;
+}
 
-  .link1:hover {
-    background-color: #fff;
-    color: rgb(61, 61, 61);
-    transition: all 0.3s ease;
-  }
+/* When checkbox checked, expand dropdown */
+#toggle1:checked ~ .menu1 {
+  max-height: 500px; /* enough to show all links */
+}
+
+/* Links inside dropdown */
+.menu1 a {
+  display: block;
+  padding: 15px 20px;
+  color: white;
+  font-weight: 700;
+  font-family: 'Oswald', sans-serif;
+  text-decoration: none;
+  border-bottom: 1px solid #444;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu1 a:last-child {
+  border-bottom: none;
+}
+
+/* Highlight links on hover */
+.menu1 a:hover {
+  background-color: white;
+  color: #3d3d3d;
 }
