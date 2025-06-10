@@ -2,10 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');  // your db.js exports pool.promise()
 
-const app = express(); // ✅ Define app before using it
+const app = express();
 
-app.use(cors()); // ✅ Use cors middleware after app is defined
-app.use(express.json()); // ✅ Parse incoming JSON requests
+app.use(cors());
+app.use(express.json());
 
 // GET all users
 app.get('/users', async (req, res) => {
@@ -43,6 +43,31 @@ app.post('/api/login', async (req, res) => {
     }
 
     res.json({ message: 'Login successful', userId: user.idlietotajs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// POST register
+app.post('/api/register', async (req, res) => {
+  const { vards, epasts, parole } = req.body;
+
+  if (!vards || !epasts || !parole) {
+    return res.status(400).json({ message: 'Name, email, and password are required' });
+  }
+
+  try {
+    // Check if email already exists
+    const [existing] = await db.query('SELECT epasts FROM lietotajs WHERE epasts = ?', [epasts]);
+    if (existing.length > 0) {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+
+    // Insert new user
+    await db.query('INSERT INTO lietotajs (vards, epasts, parole) VALUES (?, ?, ?)', [vards, epasts, parole]);
+
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
