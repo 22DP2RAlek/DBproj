@@ -46,7 +46,7 @@ const handleLogin = async () => {
       login(response.data.role, response.data.vards)
 
       errorMessage.value = ''
-      router.push('/map')
+      router.push('/')
     } else {
       errorMessage.value = response.data.message || 'Login failed'
     }
