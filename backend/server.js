@@ -1,11 +1,16 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./db');  // your db.js exports pool.promise()
+const path = require('path');
+const db = require('./db'); // your db.js exports pool.promise()
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static images from the correct folder
+// Adjust the path if your backend is not at the same folder level as 'DBprojekts'
+app.use('/pictures', express.static(path.join(__dirname, '../DBprojekts/public/pictures')));
 
 // GET all users (for testing/debugging)
 app.get('/users', async (req, res) => {
@@ -18,11 +23,26 @@ app.get('/users', async (req, res) => {
   }
 });
 
-// GET all apskatespunkti (points of interest)
+// GET apskatespunkti with full image URLs
 app.get('/api/apskatespunkti', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM apskatespunkti');
-    res.json(rows);  // returns array of points for frontend to render markers
+    const [rows] = await db.query(`
+      SELECT 
+        ap.*, 
+        at.attels 
+      FROM apskatespunkti ap
+      LEFT JOIN atteli at ON ap.idapskatespunkti = at.idapskatespunkti
+    `);
+
+    const host = req.get('host');     // e.g. localhost:3000
+    const protocol = req.protocol;    // http or https
+
+    const dataWithFullImageUrl = rows.map(item => ({
+      ...item,
+      imageUrl: item.attels ? `${protocol}://${host}/pictures/${item.attels}` : null
+    }));
+
+    res.json(dataWithFullImageUrl);
   } catch (err) {
     console.error('Database query error:', err);
     res.status(500).json({ success: false, message: 'Database error fetching apskatespunkti' });
@@ -79,7 +99,10 @@ app.post('/api/register', async (req, res) => {
       return res.status(409).json({ success: false, message: 'Email already registered' });
     }
 
-    await db.query('INSERT INTO lietotajs (vards, epasts, parole) VALUES (?, ?, ?)', [vards, epasts, parole]);
+    await db.query(
+      'INSERT INTO lietotajs (vards, epasts, parole) VALUES (?, ?, ?)',
+      [vards, epasts, parole]
+    );
 
     res.status(201).json({ success: true, message: 'User registered successfully' });
   } catch (error) {

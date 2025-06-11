@@ -27,9 +27,11 @@
         <div class="card" v-for="spot in spots" :key="spot.idapskatespunkti">
           <img
             v-if="spot.attels"
-            :src="`/pictures/${spot.attels}`"
+            :src="`http://localhost:3000/pictures/${spot.attels}`"
             :alt="spot.nosaukums"
+            class="card-image"
           />
+          <div v-else class="card-image-placeholder">Nav attēla</div>
           <div class="card-content">
             <h3>{{ spot.nosaukums }}</h3>
             <p><strong>Darba laiks:</strong> {{ spot.darba_laiks || 'Nav informācijas' }}</p>
