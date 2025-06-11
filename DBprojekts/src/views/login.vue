@@ -16,18 +16,23 @@
       />
       <button type="submit">Login</button>
     </form>
-    <p v-if="errorMessage" style="color:red">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
-import '../assets/login.css' // ✅ Keep your CSS
+import { useAuth } from '@/composables/useAuth'
+import '../assets/login.css'
 
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
+
+const router = useRouter()
+const { login } = useAuth()
 
 const handleLogin = async () => {
   try {
@@ -36,8 +41,15 @@ const handleLogin = async () => {
       parole: password.value
     })
 
-    alert('Login successful! User ID: ' + response.data.userId)
-    errorMessage.value = ''
+    if (response.data.success) {
+      // Save role and name in composable & localStorage
+      login(response.data.role, response.data.vards)
+
+      errorMessage.value = ''
+      router.push('/map')
+    } else {
+      errorMessage.value = response.data.message || 'Login failed'
+    }
   } catch (error) {
     if (error.response) {
       errorMessage.value = error.response.data.message || 'Login failed'
@@ -47,3 +59,10 @@ const handleLogin = async () => {
   }
 }
 </script>
+
+<style scoped>
+.error-message {
+  color: red;
+  margin-top: 1rem;
+}
+</style>

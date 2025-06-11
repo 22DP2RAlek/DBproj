@@ -7,14 +7,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// GET all users
+// GET all users (for testing/debugging)
 app.get('/users', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM lietotajs');
     res.json(rows);
   } catch (err) {
     console.error('Database query error:', err);
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ success: false, message: 'Database error' });
   }
 });
 
@@ -23,29 +23,37 @@ app.post('/api/login', async (req, res) => {
   const { epasts, parole } = req.body;
 
   if (!epasts || !parole) {
-    return res.status(400).json({ message: 'Email and password are required' });
+    return res.status(400).json({ success: false, message: 'Email and password are required' });
   }
 
   try {
+    // Select id, email, password, role, and name (vards)
     const [rows] = await db.query(
-      'SELECT idlietotajs, epasts, parole FROM lietotajs WHERE epasts = ?',
+      'SELECT idlietotajs, epasts, parole, idlomas, vards FROM lietotajs WHERE epasts = ?',
       [epasts]
     );
 
     if (rows.length === 0) {
-      return res.status(401).json({ message: 'User not found' });
+      return res.status(401).json({ success: false, message: 'User not found' });
     }
 
     const user = rows[0];
 
+    // You may want to hash & compare passwords here for security, but keeping as is for now
     if (user.parole !== parole) {
-      return res.status(401).json({ message: 'Incorrect password' });
+      return res.status(401).json({ success: false, message: 'Incorrect password' });
     }
 
-    res.json({ message: 'Login successful', userId: user.idlietotajs });
+    // Return success with role, name, and userId for frontend use
+    res.json({
+      success: true,
+      role: user.idlomas,
+      vards: user.vards,
+      userId: user.idlietotajs
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
@@ -54,23 +62,23 @@ app.post('/api/register', async (req, res) => {
   const { vards, epasts, parole } = req.body;
 
   if (!vards || !epasts || !parole) {
-    return res.status(400).json({ message: 'Name, email, and password are required' });
+    return res.status(400).json({ success: false, message: 'Name, email, and password are required' });
   }
 
   try {
     // Check if email already exists
     const [existing] = await db.query('SELECT epasts FROM lietotajs WHERE epasts = ?', [epasts]);
     if (existing.length > 0) {
-      return res.status(409).json({ message: 'Email already registered' });
+      return res.status(409).json({ success: false, message: 'Email already registered' });
     }
 
-    // Insert new user
+    // Insert new user; role defaults to 1 (you can modify if needed)
     await db.query('INSERT INTO lietotajs (vards, epasts, parole) VALUES (?, ?, ?)', [vards, epasts, parole]);
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ success: true, message: 'User registered successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 

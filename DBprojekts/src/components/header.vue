@@ -1,13 +1,36 @@
+<script setup>
+import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
+
+const router = useRouter()
+const { isLoggedIn, userName, logout } = useAuth()
+
+const handleLogout = () => {
+  logout()
+  router.push('/login')
+}
+</script>
+
 <template>
   <section class="p-menu1">
     <nav id="navbar" class="navigation" role="navigation">
-      <!-- Login/Register -->
+
+      <!-- Left buttons -->
       <div class="left-buttons">
-        <router-link class="btn" to="/login">Login</router-link>
-        <router-link class="btn" to="/register">Register</router-link>
+        <!-- If logged in -->
+        <template v-if="isLoggedIn">
+          <span class="user-name">Hello, {{ userName }}!</span>
+          <button class="btn logout-btn" @click="handleLogout">Logout</button>
+        </template>
+
+        <!-- If not logged in -->
+        <template v-else>
+          <router-link class="btn" to="/login">Login</router-link>
+          <router-link class="btn" to="/register">Register</router-link>
+        </template>
       </div>
 
-      <!-- Hamburger input & label (must be adjacent!) -->
+      <!-- Hamburger input & label -->
       <input id="toggle1" type="checkbox" />
       <label class="hamburger1" for="toggle1">
         <div class="top"></div>
@@ -15,7 +38,7 @@
         <div class="bottom"></div>
       </label>
 
-      <!-- Collapsible menu (must be after label for selector to work) -->
+      <!-- Dropdown menu -->
       <nav class="menu1">
         <router-link to="/">Sākums</router-link>
         <router-link to="/about">Par mums</router-link>

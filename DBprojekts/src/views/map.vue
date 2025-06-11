@@ -1,10 +1,14 @@
 <script setup>
-import '../assets/map.css';
-import { onMounted } from 'vue'
+import '../assets/map.css'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// Fix for default marker icons in some build setups
+const router = useRouter()
+const showPopup = ref(false)
+
+// Fix for default marker icons
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
@@ -13,13 +17,17 @@ L.Icon.Default.mergeOptions({
 })
 
 onMounted(() => {
-  const map = L.map('map').setView([56.9496, 24.1052], 7) // Center on Latvia
+  const role = localStorage.getItem('userRole')
+  if (!role) {
+    showPopup.value = true
+  }
+
+  const map = L.map('map').setView([56.9496, 24.1052], 7)
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map)
 
-  // Example pins with popups
   const locations = [
     {
       coords: [56.946, 24.105],
@@ -43,15 +51,30 @@ onMounted(() => {
       .bindPopup(`<b>${loc.name}</b><br>${loc.description}`)
   })
 })
+
+function goToLogin() {
+  router.push('/login')
+}
+
+function goToRegister() {
+  router.push('/register')
+}
 </script>
 
 <template>
-  <div id="map" style="height: 600px;"></div>
-</template>
+  <div class="map-wrapper">
+    <div id="map"></div>
 
-<style scoped>
-/* Optional: ensure the map container fills the width */
-#map {
-  width: 100%;
-}
-</style>
+    <!-- Popup overlay for guests -->
+    <div v-if="showPopup" class="popup-overlay">
+      <div class="popup-content">
+        <h2>Please Login or Register</h2>
+        <p>You need an account to view full map details.</p>
+        <div class="popup-buttons">
+          <button @click="goToLogin">Login</button>
+          <button @click="goToRegister">Register</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
