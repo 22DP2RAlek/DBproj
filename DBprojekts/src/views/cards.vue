@@ -37,6 +37,7 @@
             <p><strong>Darba laiks:</strong> {{ spot.darba_laiks || 'Nav informācijas' }}</p>
             <p>{{ spot.apraksts || 'Nav apraksta' }}</p>
             <p><strong>Adrese:</strong> {{ spot.adrese || 'Nav adreses' }}</p>
+            <!-- Pass spot ID as query param when navigating -->
             <button @click="goToMap(spot)">Apskatīt kartē</button>
           </div>
         </div>
@@ -77,6 +78,7 @@ onMounted(async () => {
   }
 })
 
+// Navigate to map passing the spot ID via query
 function goToMap(spot) {
   router.push({ name: 'map', query: { spotId: spot.idapskatespunkti } })
 }
