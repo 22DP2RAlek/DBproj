@@ -27,17 +27,39 @@ nav a:hover {
   border-radius: 5px;
 }
 
+.cards-page-wrapper {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 40px 20px 20px;
+  box-sizing: border-box;
+}
+
+.page-title {
+  font-size: 36px;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.page-subtitle {
+  font-size: 18px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
 .card-container {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 50px 10px;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .card {
-  flex: 0 1 calc(33.333% - 20px); /* 3 cards per row */
-  max-width: 350px;
+  flex: 0 1 calc(33.333% - 20px); /* Exactly 3 cards per row */
+  max-width: 370px; /* Slightly bigger */
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -54,7 +76,7 @@ nav a:hover {
 
 .card img {
   width: 100%;
-  height: 250px; /* taller image */
+  height: 280px; /* Taller for bigger images */
   object-fit: cover;
 }
 
@@ -101,11 +123,18 @@ nav a:hover {
   margin-bottom: 1rem;
 }
 
+/* Loading style */
+.loading {
+  text-align: center;
+  font-size: 18px;
+  margin: 20px 0;
+}
+
 /* Responsive: 2 cards per row */
 @media (max-width: 900px) {
   .card {
     flex: 0 1 calc(50% - 20px);
-    max-width: 45%;
+    max-width: 48%;
   }
 }
 
