@@ -32,19 +32,20 @@ const handleLogout = () => {
 
       <!-- Hamburger input & label -->
       <input id="toggle1" type="checkbox" />
-      <label class="hamburger1" for="toggle1">
+      <label class="hamburger1" for="toggle1" aria-label="Toggle navigation menu">
         <div class="top"></div>
         <div class="meat"></div>
         <div class="bottom"></div>
       </label>
 
       <!-- Dropdown menu -->
-      <nav class="menu1">
+      <div class="menu1">
         <router-link to="/">Sākums</router-link>
         <router-link to="/about">Par mums</router-link>
         <router-link to="/cards">Kartiņas</router-link>
         <router-link to="/map">Karte</router-link>
-      </nav>
+      </div>
+
     </nav>
   </section>
 </template>

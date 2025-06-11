@@ -77,19 +77,21 @@
   position: absolute;
   top: 60px; /* just below navbar */
   right: 0;
-  width: 200px;
+  width: 220px; /* wider so all links fit nicely */
   background-color: #333; /* match nav background */
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.4s ease;
   border-radius: 0 0 5px 5px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 120;
+  z-index: 2100;
+  display: flex;
+  flex-direction: column; /* stack links vertically */
 }
 
 /* When checkbox checked, expand dropdown */
 #toggle1:checked ~ .menu1 {
-  max-height: 500px; /* enough to show all links */
+  max-height: 1000px; /* big enough to show all links */
 }
 
 /* Links inside dropdown */
@@ -102,6 +104,8 @@
   text-decoration: none;
   border-bottom: 1px solid #444;
   transition: background-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap; /* prevent wrapping */
+  box-sizing: border-box;
 }
 
 .menu1 a:last-child {
@@ -113,6 +117,8 @@
   background-color: white;
   color: #3d3d3d;
 }
+
+/* User name style */
 .user-name {
   color: white;
   font-weight: 700;
@@ -138,4 +144,3 @@
   text-decoration: underline;
   color: #ddd;
 }
-

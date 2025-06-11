@@ -18,6 +18,17 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// GET all apskatespunkti (points of interest)
+app.get('/api/apskatespunkti', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM apskatespunkti');
+    res.json(rows);  // returns array of points for frontend to render markers
+  } catch (err) {
+    console.error('Database query error:', err);
+    res.status(500).json({ success: false, message: 'Database error fetching apskatespunkti' });
+  }
+});
+
 // POST login
 app.post('/api/login', async (req, res) => {
   const { epasts, parole } = req.body;
@@ -27,7 +38,6 @@ app.post('/api/login', async (req, res) => {
   }
 
   try {
-    // Select id, email, password, role, and name (vards)
     const [rows] = await db.query(
       'SELECT idlietotajs, epasts, parole, idlomas, vards FROM lietotajs WHERE epasts = ?',
       [epasts]
@@ -39,12 +49,10 @@ app.post('/api/login', async (req, res) => {
 
     const user = rows[0];
 
-    // You may want to hash & compare passwords here for security, but keeping as is for now
     if (user.parole !== parole) {
       return res.status(401).json({ success: false, message: 'Incorrect password' });
     }
 
-    // Return success with role, name, and userId for frontend use
     res.json({
       success: true,
       role: user.idlomas,
@@ -66,13 +74,11 @@ app.post('/api/register', async (req, res) => {
   }
 
   try {
-    // Check if email already exists
     const [existing] = await db.query('SELECT epasts FROM lietotajs WHERE epasts = ?', [epasts]);
     if (existing.length > 0) {
       return res.status(409).json({ success: false, message: 'Email already registered' });
     }
 
-    // Insert new user; role defaults to 1 (you can modify if needed)
     await db.query('INSERT INTO lietotajs (vards, epasts, parole) VALUES (?, ?, ?)', [vards, epasts, parole]);
 
     res.status(201).json({ success: true, message: 'User registered successfully' });

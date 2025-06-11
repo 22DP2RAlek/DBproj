@@ -17,21 +17,20 @@ const routes = [
     component: () => import('../views/cards.vue'),
   },
   {
-  path: '/login',
-  name: 'login',
-  component: () => import('@/views/login.vue')
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login.vue')
   },
   {
-  path: '/register',
-  name: 'register',
-  component: () => import('@/views/register.vue')
-  },  
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/register.vue')
+  },
   {
-  path: '/map',
-  name: 'map',
-  component: () => import('@/views/map.vue')
+    path: '/map',
+    name: 'map',
+    component: () => import('@/views/map.vue')
   }
-
 ]
 
 const router = createRouter({
@@ -40,4 +39,3 @@ const router = createRouter({
 })
 
 export default router
-

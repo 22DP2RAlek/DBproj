@@ -1,35 +1,51 @@
 <template>
   <div class="card-container">
-    <div class="card" v-for="(city, index) in cards" :key="index">
-      <img :src="city.image" :alt="city.name" />
+    <h1>Apskates objekti</h1>
+    <div v-if="loading">Ielādē datus...</div>
+    <div v-if="error" class="error">{{ error }}</div>
+
+    <div class="card" v-for="spot in spots" :key="spot.idapskatespunkti">
+      <img
+        v-if="spot.attels"
+        :src="`/pictures/${spot.attels}`"
+        :alt="spot.nosaukums"
+      />
       <div class="card-content">
-        <h3>{{ city.name }}</h3>
-        <p>{{ city.description }}</p>
-        <button>Apskatīt</button>
+        <h3>{{ spot.nosaukums }}</h3>
+        <p><strong>Darba laiks:</strong> {{ spot.darba_laiks || 'Nav informācijas' }}</p>
+        <p>{{ spot.apraksts || 'Nav apraksta' }}</p>
+        <p><strong>Adrese:</strong> {{ spot.adrese || 'Nav adreses' }}</p>
+        <button @click="goToMap(spot)">Apskatīt kartē</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-// Make sure this path is correct relative to this file
-import '../assets/cards.css'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-const cards = [
-  {
-    name: 'Jelgava',
-    image: 'https://zz.lv/wp-content/uploads/2023/09/Jelgava-scaled.jpg',
-    description: 'Jelgava ir skaista pilsēta netālu no Rīgas.',
-  },
-  {
-    name: 'Liepāja',
-    image: 'https://static.lsm.lv/media/2024/07/large/1/o4sa.jpg',
-    description: 'Liepāja ir trešā lielākā pilsēta Latvijā. Tā ir lielākā Kurzemes pilsēta.',
-  },
-  {
-    name: 'Rīga',
-    image: 'https://www.sundaypost.com/wp-content/uploads/sites/13/2018/05/iStock-527672859.jpg.jpg',
-    description: 'Lielākā Latvijas pilsēta un Latvijas galvaspilsēta ir Rīga.',
-  },
-]
+const spots = ref([])
+const loading = ref(true)
+const error = ref(null)
+const router = useRouter()
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/apskatespunkti')
+    spots.value = response.data
+  } catch (err) {
+    error.value = 'Neizdevās ielādēt datus.'
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+})
+
+function goToMap(spot) {
+  router.push({ name: 'map', query: { spotId: spot.idapskatespunkti } })
+}
 </script>
+
+<style src="../assets/cards.css"></style>

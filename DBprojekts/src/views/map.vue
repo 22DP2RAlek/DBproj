@@ -4,11 +4,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import axios from 'axios'
 
 const router = useRouter()
 const showPopup = ref(false)
 
-// Fix for default marker icons
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
@@ -16,7 +16,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).href,
 })
 
-onMounted(() => {
+onMounted(async () => {
   const role = localStorage.getItem('userRole')
   if (!role) {
     showPopup.value = true
@@ -28,28 +28,26 @@ onMounted(() => {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map)
 
-  const locations = [
-    {
-      coords: [56.946, 24.105],
-      name: 'Riga',
-      description: 'Capital of Latvia, beautiful old town and vibrant culture.'
-    },
-    {
-      coords: [57.044, 24.143],
-      name: 'Jurmala',
-      description: 'Popular seaside resort with sandy beaches.'
-    },
-    {
-      coords: [57.162, 24.567],
-      name: 'Sigulda',
-      description: 'Known for medieval castles and stunning nature.'
-    }
-  ]
+  if (role) {
+    try {
+      const response = await axios.get('http://localhost:3000/api/apskatespunkti')
+      console.log('Apskatespunkti data:', response.data) // Debug
 
-  locations.forEach(loc => {
-    L.marker(loc.coords).addTo(map)
-      .bindPopup(`<b>${loc.name}</b><br>${loc.description}`)
-  })
+      response.data.forEach(loc => {
+        if (loc.koord_x && loc.koord_y) {
+          L.marker([loc.koord_x, loc.koord_y]).addTo(map)
+            .bindPopup(
+              `<b>${loc.nosaukums}</b><br>` +
+              `<i>${loc.darba_laiks || 'No working hours info'}</i><br>` +
+              `${loc.apraksts || 'No description'}<br>` +
+              `<small>${loc.adrese || ''}</small>`
+            )
+        }
+      })
+    } catch (error) {
+      console.error('Error fetching apskatespunkti:', error)
+    }
+  }
 })
 
 function goToLogin() {
@@ -65,7 +63,6 @@ function goToRegister() {
   <div class="map-wrapper">
     <div id="map"></div>
 
-    <!-- Popup overlay for guests -->
     <div v-if="showPopup" class="popup-overlay">
       <div class="popup-content">
         <h2>Please Login or Register</h2>
