@@ -42,8 +42,12 @@ const handleLogin = async () => {
     })
 
     if (response.data.success) {
-      // Save role and name in composable & localStorage
-      login(response.data.role, response.data.vards)
+      // ✅ Update: use object for login() to match useAuth.js
+      login({
+        id: response.data.userId,
+        name: response.data.vards,
+        role: response.data.role
+      })
 
       errorMessage.value = ''
       router.push('/')

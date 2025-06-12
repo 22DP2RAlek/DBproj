@@ -30,7 +30,13 @@ const routes = [
     path: '/map',
     name: 'map',
     component: () => import('@/views/map.vue')
+  },
+  {
+  path: '/review',
+  name: 'review',
+  component: () => import('@/views/review.vue')
   }
+
 ]
 
 const router = createRouter({

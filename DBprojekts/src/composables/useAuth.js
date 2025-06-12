@@ -1,30 +1,30 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
-const userRole = ref(localStorage.getItem('userRole') || null)
-const userName = ref(localStorage.getItem('userName') || null)
-
-// Derived reactive value
-const isLoggedIn = computed(() => !!userRole.value)
+const isLoggedIn = ref(false)
+const userId = ref(null)
+const userName = ref('')
+const userRole = ref(null)
 
 export function useAuth() {
-  function login(role, name) {
-    userRole.value = role
+  function login({ id, name, role }) {
+    isLoggedIn.value = true
+    userId.value = id
     userName.value = name
-    localStorage.setItem('userRole', role)
-    localStorage.setItem('userName', name)
+    userRole.value = role
   }
 
   function logout() {
+    isLoggedIn.value = false
+    userId.value = null
+    userName.value = ''
     userRole.value = null
-    userName.value = null
-    localStorage.removeItem('userRole')
-    localStorage.removeItem('userName')
   }
 
   return {
-    userRole,
-    userName,
     isLoggedIn,
+    userId,
+    userName,
+    userRole,
     login,
     logout
   }
