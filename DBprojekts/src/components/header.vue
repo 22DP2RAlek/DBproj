@@ -41,9 +41,10 @@ const handleLogout = () => {
       <!-- Dropdown menu -->
       <div class="menu1">
         <router-link to="/">Sākums</router-link>
-        <router-link to="/review">Atsauksmes</router-link>
-        <router-link to="/cards">Apskates objekti</router-link>
         <router-link to="/map">Karte</router-link>
+        <router-link to="/cards">Apskates objekti</router-link>
+        <router-link to="/review">Atsauksmes</router-link>
+        <router-link to ="/savedSpots">Saglabātie objekti</router-link>
       </div>
 
     </nav>

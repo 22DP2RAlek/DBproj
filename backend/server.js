@@ -127,13 +127,6 @@ app.get('/api/atsauksmes/:idapskatespunkti', async (req, res) => {
 app.post('/api/atsauksmes', async (req, res) => {
   const { vertejums, komentars, idlietotajs, idapskatespunkti } = req.body
 
-  console.log('🟡 Received review submission:', {
-    vertejums,
-    komentars,
-    idlietotajs,
-    idapskatespunkti
-  })
-
   if (!vertejums || !komentars || !idlietotajs || !idapskatespunkti) {
     return res.status(400).json({ success: false, message: 'All review fields are required' })
   }
@@ -146,7 +139,7 @@ app.post('/api/atsauksmes', async (req, res) => {
     )
     res.status(201).json({ success: true, message: 'Review added successfully' })
   } catch (err) {
-    console.error('❌ Database error saving review:', err)
+    console.error('Database error saving review:', err)
     res.status(500).json({ success: false, message: 'Database error saving review' })
   }
 })
@@ -169,12 +162,119 @@ app.delete('/api/atsauksmes/:idatsauksmes', async (req, res) => {
 
     res.json({ success: true, message: 'Review deleted successfully' })
   } catch (err) {
-    console.error('❌ Database error deleting review:', err)
+    console.error('Database error deleting review:', err)
     res.status(500).json({ success: false, message: 'Database error deleting review' })
   }
 })
 
-const PORT = 3000
+// GET saved spots with nested apskatespunkts data
+app.get('/api/savedspots/:idlietotajs', async (req, res) => {
+  const { idlietotajs } = req.params
+  try {
+    const [rows] = await db.query(
+      `SELECT 
+         so.idsaglabatieobjekti, so.piezimes, so.izveidosanaslaiks, 
+         ap.idapskatespunkti, ap.nosaukums, ap.apraksts, ap.darba_laiks, ap.adrese, ap.koord_x, ap.koord_y,
+         at.attels
+       FROM saglabatieobjekti so
+       JOIN apskatespunkti ap ON so.idapskatespunkti = ap.idapskatespunkti
+       LEFT JOIN atteli at ON ap.idapskatespunkti = at.idapskatespunkti
+       WHERE so.idlietotajs = ?`,
+      [idlietotajs]
+    )
+
+    const host = req.get('host')
+    const protocol = req.protocol
+
+    const transformed = rows.map(row => ({
+      idsaglabatieobjekti: row.idsaglabatieobjekti,
+      piezimes: row.piezimes,
+      izveidosanaslaiks: row.izveidosanaslaiks,
+      idlietotajs: idlietotajs,
+      idapskatespunkti: row.idapskatespunkti,
+      apskatespunkts: {
+        idapskatespunkti: row.idapskatespunkti,
+        nosaukums: row.nosaukums,
+        apraksts: row.apraksts,
+        darba_laiks: row.darba_laiks,
+        adrese: row.adrese,
+        koord_x: row.koord_x,
+        koord_y: row.koord_y,
+        imageUrl: row.attels ? `${protocol}://${host}/pictures/${row.attels}` : null
+      }
+    }))
+
+    res.json(transformed)
+  } catch (err) {
+    console.error('Error fetching saved spots:', err)
+    res.status(500).json({ success: false, message: 'Database error fetching saved spots' })
+  }
+})
+
+// Save a spot
+app.post('/api/savedspots', async (req, res) => {
+  const { idlietotajs, idapskatespunkti } = req.body
+
+  if (!idlietotajs || !idapskatespunkti) {
+    return res.status(400).json({ success: false, message: 'Missing required fields' })
+  }
+
+  try {
+    await db.query(
+      `INSERT INTO saglabatieobjekti (piezimes, izveidosanaslaiks, idlietotajs, idapskatespunkti) 
+       VALUES ('', NOW(), ?, ?)`,
+      [idlietotajs, idapskatespunkti]
+    )
+    res.status(201).json({ success: true, message: 'Spot saved' })
+  } catch (err) {
+    console.error('Error saving spot:', err)
+    res.status(500).json({ success: false, message: 'Database error saving spot' })
+  }
+})
+
+// DELETE saved spot
+app.delete('/api/savedspots/:idsaglabatieobjekti', async (req, res) => {
+  const { idsaglabatieobjekti } = req.params
+  try {
+    const [result] = await db.query('DELETE FROM saglabatieobjekti WHERE idsaglabatieobjekti = ?', [idsaglabatieobjekti])
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Saved spot not found' })
+    }
+    res.json({ success: true, message: 'Saved spot deleted' })
+  } catch (err) {
+    console.error('Error deleting saved spot:', err)
+    res.status(500).json({ success: false, message: 'Database error deleting saved spot' })
+  }
+})
+
+// UPDATE note (piezimes) for a saved spot
+app.put('/api/savedspots/:idsaglabatieobjekti/note', async (req, res) => {
+  const { idsaglabatieobjekti } = req.params
+  const { piezimes } = req.body
+
+  if (!piezimes || piezimes.trim() === '') {
+    return res.status(400).json({ success: false, message: 'Note text is required' })
+  }
+
+  try {
+    const [result] = await db.query(
+      'UPDATE saglabatieobjekti SET piezimes = ? WHERE idsaglabatieobjekti = ?',
+      [piezimes, idsaglabatieobjekti]
+    )
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Saved spot not found' })
+    }
+
+    res.json({ success: true, message: 'Note updated successfully' })
+  } catch (err) {
+    console.error('Error updating note:', err)
+    res.status(500).json({ success: false, message: 'Database error updating note' })
+  }
+})
+
+// Start server
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })

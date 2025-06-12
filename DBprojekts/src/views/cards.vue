@@ -25,6 +25,11 @@
 
       <div v-if="!loading && !error" class="card-container">
         <div class="card" v-for="spot in spots" :key="spot.idapskatespunkti">
+          <!-- Save Star -->
+          <div class="save-star" @click="toggleSaved(spot)">
+            {{ isSaved(spot.idapskatespunkti) ? '⭐' : '☆' }}
+          </div>
+
           <img
             v-if="spot.attels"
             :src="`http://localhost:3000/pictures/${spot.attels}`"
@@ -37,7 +42,6 @@
             <p><strong>Darba laiks:</strong> {{ spot.darba_laiks || 'Nav informācijas' }}</p>
             <p>{{ spot.apraksts || 'Nav apraksta' }}</p>
             <p><strong>Adrese:</strong> {{ spot.adrese || 'Nav adreses' }}</p>
-            <!-- Pass spot ID as query param when navigating -->
             <button @click="goToMap(spot)">Apskatīt kartē</button>
           </div>
         </div>
@@ -53,9 +57,10 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
-const { isLoggedIn } = useAuth()
+const { isLoggedIn, userId } = useAuth()
 
 const spots = ref([])
+const savedIds = ref([])
 const loading = ref(true)
 const error = ref(null)
 const showPopup = ref(false)
@@ -70,6 +75,7 @@ onMounted(async () => {
   try {
     const response = await axios.get('http://localhost:3000/api/apskatespunkti')
     spots.value = response.data
+    await fetchSavedSpots()
   } catch (err) {
     error.value = 'Neizdevās ielādēt datus.'
     console.error(err)
@@ -78,7 +84,6 @@ onMounted(async () => {
   }
 })
 
-// Navigate to map passing the spot ID via query
 function goToMap(spot) {
   router.push({ name: 'map', query: { spotId: spot.idapskatespunkti } })
 }
@@ -89,6 +94,48 @@ function goToLogin() {
 
 function goToRegister() {
   router.push('/register')
+}
+
+// Saved spots logic
+async function fetchSavedSpots() {
+  try {
+    const res = await axios.get(`http://localhost:3000/api/savedspots/${userId.value}`)
+    savedIds.value = res.data.map((s) => s.idapskatespunkti)
+  } catch (err) {
+    console.error('Kļūda ielādējot saglabātos:', err)
+  }
+}
+
+function isSaved(spotId) {
+  return savedIds.value.includes(spotId)
+}
+
+async function toggleSaved(spot) {
+  const spotId = spot.idapskatespunkti
+
+  if (isSaved(spotId)) {
+    try {
+      const savedItem = await axios.get(`http://localhost:3000/api/savedspots/${userId.value}`)
+      const match = savedItem.data.find((s) => s.idapskatespunkti === spotId)
+      if (match) {
+        await axios.delete(`http://localhost:3000/api/savedspots/${match.idsaglabatieobjekti}`)
+        savedIds.value = savedIds.value.filter((id) => id !== spotId)
+      }
+    } catch (err) {
+      console.error('Neizdevās dzēst saglabāto:', err)
+    }
+  } else {
+    try {
+      await axios.post(`http://localhost:3000/api/savedspots`, {
+        idlietotajs: userId.value,
+        idapskatespunkti: spotId,
+        piezimes: ''
+      })
+      savedIds.value.push(spotId)
+    } catch (err) {
+      console.error('Neizdevās saglabāt objektu:', err)
+    }
+  }
 }
 </script>
 
