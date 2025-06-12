@@ -27,6 +27,9 @@
       <button :disabled="!isLoggedIn" @click="submitReview">Iesniegt atsauksmi</button>
 
       <p v-if="!isLoggedIn" class="login-warning">Jums jāpiesakās, lai iesniegtu atsauksmi.</p>
+      <p v-if="statusMessage" :class="{'error-message': isError, 'success-message': !isError}">
+        {{ statusMessage }}
+      </p>
     </div>
 
     <div v-if="reviews.length" class="review-list">
@@ -71,6 +74,9 @@ const reviews = ref([])
 const newReview = ref({ vertejums: '', komentars: '' })
 const loading = ref(false)
 
+const statusMessage = ref('')
+const isError = ref(false)
+
 onMounted(async () => {
   await fetchSpots()
   if (selectedSpotId.value) await fetchReviews(selectedSpotId.value)
@@ -79,6 +85,8 @@ onMounted(async () => {
 watch(selectedSpotId, async (newId) => {
   if (newId) {
     newReview.value = { vertejums: '', komentars: '' }
+    statusMessage.value = ''
+    isError.value = false
     await fetchReviews(newId)
   }
 })
@@ -106,7 +114,8 @@ async function fetchReviews(spotId) {
 
 async function submitReview() {
   if (!newReview.value.vertejums || !newReview.value.komentars) {
-    alert('Lūdzu, aizpildi gan vērtējumu, gan komentāru.')
+    statusMessage.value = 'Lūdzu, aizpildi gan vērtējumu, gan komentāru.'
+    isError.value = true
     return
   }
 
@@ -120,25 +129,33 @@ async function submitReview() {
 
     newReview.value = { vertejums: '', komentars: '' }
     await fetchReviews(selectedSpotId.value)
-    alert('Atsauksme pievienota!')
+    statusMessage.value = 'Atsauksme pievienota!'
+    isError.value = false
+    setTimeout(() => {
+      statusMessage.value = ''
+    }, 3000)
   } catch (err) {
     console.error('Neizdevās saglabāt atsauksmi:', err)
-    alert('Radās problēmas saglabājot atsauksmi.')
+    statusMessage.value = 'Radās problēmas saglabājot atsauksmi.'
+    isError.value = true
   }
 }
 
 async function deleteReview(idatsauksmes) {
-  if (!confirm('Vai tiešām vēlies dzēst šo atsauksmi?')) return
-
   try {
     await axios.delete(`http://localhost:3000/api/atsauksmes/${idatsauksmes}`, {
       data: { idlietotajs: userId.value, idlomas: parseInt(userRole.value) }
     })
     await fetchReviews(selectedSpotId.value)
-    alert('Atsauksme dzēsta.')
+    statusMessage.value = 'Atsauksme dzēsta.'
+    isError.value = false
+    setTimeout(() => {
+      statusMessage.value = ''
+    }, 3000)
   } catch (err) {
     console.error('Kļūda dzēšot atsauksmi:', err)
-    alert('Neizdevās dzēst atsauksmi.')
+    statusMessage.value = 'Neizdevās dzēst atsauksmi.'
+    isError.value = true
   }
 }
 

@@ -36,6 +36,19 @@
   margin-top: 10px;
 }
 
+.status-message {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.error-message {
+  color: red;
+}
+
+.success-message {
+  color: green;
+}
+
 .review-list {
   margin-top: 30px;
 }
@@ -53,4 +66,12 @@
 
 .stars {
   color: gold;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+  font-weight: bold;
 }
