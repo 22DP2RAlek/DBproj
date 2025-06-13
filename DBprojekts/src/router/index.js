@@ -40,6 +40,11 @@ const routes = [
   path: '/savedSpots',
   name: 'savedSpots',
   component: () => import('@/views/savedSpots.vue')
+  },
+  {
+  path: '/adminDB',
+  name: 'adminDB',
+  component: () => import('@/views/adminDB.vue')
   }
 
 ]

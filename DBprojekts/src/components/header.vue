@@ -44,7 +44,8 @@ const handleLogout = () => {
         <router-link to="/map">Karte</router-link>
         <router-link to="/cards">Apskates objekti</router-link>
         <router-link to="/review">Atsauksmes</router-link>
-        <router-link to ="/savedSpots">Saglabātie objekti</router-link>
+        <router-link to="/savedSpots">Saglabātie objekti</router-link>
+        <router-link to="/adminDB">Administratoriem </router-link>
       </div>
 
     </nav>

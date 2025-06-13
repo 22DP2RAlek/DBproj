@@ -143,7 +143,7 @@ async function saveNote() {
 
   try {
     const response = await axios.put(
-      `http://localhost:3000/api/savedspots/${selectedSavedId.value}/note`,
+      `http://localhost:3000/api/savedspots/${selectedSavedId.value}`, // <-- fixed URL here
       { piezimes: noteDraft.value.trim() }
     )
     if (response.data.success) {
