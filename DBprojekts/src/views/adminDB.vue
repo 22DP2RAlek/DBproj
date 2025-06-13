@@ -154,11 +154,8 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const role = localStorage.getItem("idlomas");
+        const response = await axios.get("http://localhost:3000/users");
 
-        const response = await axios.get("http://localhost:3000/users", {
-          headers: { "X-User-Role": role },
-        });
         this.users = response.data;
       } catch (error) {
         console.error("Error fetching users.", error);
@@ -167,11 +164,8 @@ export default {
     },
     async fetchStats() {
       try {
-        const role = localStorage.getItem("idlomas");
+        const response = await axios.get("http://localhost:3000/api/stats");
 
-        const response = await axios.get("http://localhost:3000/api/stats", {
-          headers: { "X-User-Role": role },
-        });
         this.stats = response.data;
       } catch (error) {
         console.error("Error fetching statistics.", error);
@@ -190,8 +184,6 @@ export default {
     },
     async updateUser() {
       try {
-        const role = localStorage.getItem("idlomas");
-
         if (
           !this.selectedUser.vards ||
           !this.selectedUser.epasts ||
@@ -204,8 +196,7 @@ export default {
 
         await axios.put(
           `http://localhost:3000/users/${this.selectedUser.idlietotajs}`,
-          this.selectedUser,
-          { headers: { "X-User-Role": role } }
+          this.selectedUser
         );
         alert("User updated successfully.");
         this.selectedUser = null;
@@ -219,11 +210,7 @@ export default {
       if (!confirm(`Are you sure you want to delete user ${user.idlietotajs}?`)) return;
 
       try {
-        const role = localStorage.getItem("idlomas");
-
-        await axios.delete(`http://localhost:3000/users/${user.idlietotajs}`, {
-          headers: { "X-User-Role": role },
-        });
+        await axios.delete(`http://localhost:3000/users/${user.idlietotajs}`);
         alert("User deleted.");
         this.fetchUsers();
       } catch (error) {
