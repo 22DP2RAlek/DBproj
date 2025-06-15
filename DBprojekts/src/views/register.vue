@@ -26,7 +26,7 @@ const loading = ref(false)
 
 const handleRegister = async () => {
   if (password.value !== confirmPassword.value) {
-    alert("Passwords do not match.")
+    alert("Paroles nesakrit.")
     return
   }
 
@@ -38,11 +38,10 @@ const handleRegister = async () => {
       epasts: email.value,
       parole: password.value,
     })
-    alert(response.data.message || 'Registration successful!')
-    // Optionally clear inputs or redirect to login page here
+    alert(response.data.message || 'Veiksmigi pieregistrejies!')
   } catch (error) {
     if (error.response) {
-      alert(error.response.data.message || 'Registration failed')
+      alert(error.response.data.message || 'Registracija neizdevās')
     } else {
       alert('Network or server error')
     }

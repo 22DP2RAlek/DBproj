@@ -1,53 +1,51 @@
 <template>
-  <div>
-    <!-- Navigation menu -->
-    <!-- <section class="p-menu1">
-      <nav id="navbar" class="navigation" role="navigation">
-        <input id="toggle1" type="checkbox" />
-        <label class="hamburger1" for="toggle1">
-          <div class="top"></div>
-          <div class="meat"></div>
-          <div class="bottom"></div>
-        </label>
+  <div class="home-container">
+    <h1>Atklāj Latvijas Skaistākos Stūrus</h1>
+    <p>Plāno savu nākamo ceļojumu, dalies iespaidos un atklāj slēptos dārgumus visā Latvijā.</p>
 
-        <nav class="menu1">
-          <router-link to="/home">Sākums</router-link>
-          <a href="#">Par mums</a>
-          <a href="#">Kontakti</a>
-          <router-link to="/cards">Kartiņas</router-link>
-        </nav>
-      </nav>
-    </section> -->
-
-    <!-- Header -->
-    <header>
-      <h3>Ceļojumu Aģentūra</h3>
-    </header>
-
-    <!-- Main content -->
-    <main>
-      <h2>Ceļojums</h2>
-      <p>Palīdzēsim tev plānot savu ceļojumu pa Latviju.</p>
-
-      <img
-        src="https://www.landofexperiences.gr/wp-content/uploads/2016/11/banner_gouves_beach-200x200.jpg"
-        alt="Bilde"
-        height="90%"
-      />
-    </main>
-
-    <!-- Footer -->
-    <footer>
-      <p>Kontakti +371 21345678</p>
-    </footer>
   </div>
 </template>
 
 <script setup>
-// You can import any required JavaScript functionality here
+
 </script>
 
 <style scoped>
-/* Import the external CSS file here */
-@import '../assets/home.css';
+.home-container {
+  max-width: 1000px;
+  margin: 5rem auto 2rem;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  border-radius: 12px;
+  box-shadow: 0 0 30px #00000020;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.explore-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  color: #fff;
+  background: #007bff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #00000020;
+  transition: background 0.3s ease;
+  cursor: pointer;
+}
+
+.explore-button:hover {
+  background: #0056b3;
+}
 </style>

@@ -5,7 +5,7 @@
     <section aria-label="Users management">
       <h2>Users</h2>
 
-      <!-- Search by email -->
+      <!-- Meklet ar epastu -->
       <label for="searchEmail">Search by email</label>
       <input
         id="searchEmail"
@@ -81,7 +81,7 @@
       </div>
     </section>
 
-    <!-- Statistics table -->
+    <!-- Statistika -->
     <section aria-label="Site statistics" class="stats-section">
       <h2>Statistics</h2>
       <table>
@@ -158,8 +158,8 @@ export default {
 
         this.users = response.data;
       } catch (error) {
-        console.error("Error fetching users.", error);
-        alert("Failed to load users.");
+        console.error("Kļūda.", error);
+        alert("Kļūda.");
       }
     },
     async fetchStats() {
@@ -168,8 +168,8 @@ export default {
 
         this.stats = response.data;
       } catch (error) {
-        console.error("Error fetching statistics.", error);
-        alert("Failed to load statistics.");
+        console.error("Kļūda.", error);
+        alert("Kļūda.");
       }
     },
     toggleSort(key) {
@@ -190,7 +190,7 @@ export default {
           !this.selectedUser.parole ||
           !this.selectedUser.idlomas
         ) {
-          alert("Please fill in all fields.");
+          alert("Aizpildiet visus laukus.");
           return;
         }
 
@@ -198,24 +198,24 @@ export default {
           `http://localhost:3000/users/${this.selectedUser.idlietotajs}`,
           this.selectedUser
         );
-        alert("User updated successfully.");
+        alert("Lietotajs atjauninats..");
         this.selectedUser = null;
         this.fetchUsers();
       } catch (error) {
-        console.error("Error updating user.", error);
-        alert("Failed to update user.");
+        console.error("Kļūda", error);
+        alert("Kļūda.");
       }
     },
     async deleteUser(user) {
-      if (!confirm(`Are you sure you want to delete user ${user.idlietotajs}?`)) return;
+      if (!confirm(`Vai tiešām vēlaties dzēst lietotāju? ${user.idlietotajs}?`)) return;
 
       try {
         await axios.delete(`http://localhost:3000/users/${user.idlietotajs}`);
-        alert("User deleted.");
+        alert("Lietotajs dzēsts.");
         this.fetchUsers();
       } catch (error) {
-        console.error("Error!", error);
-        alert("Failed to delete user.");
+        console.error("Kļūda!", error);
+        alert("Lietotajs neizdzests.");
       }
     },
   },

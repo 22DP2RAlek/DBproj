@@ -5,44 +5,39 @@ const db = require("./db")
 
 const app = express()
 
-app.use(cors()) // enable CORS
-app.use(express.json()) // enable parsing of JSON body
+app.use(cors()) 
+app.use(express.json()) 
 
-// Serve static images
+
 app.use('/pictures', express.static(path.join(__dirname, '../DBprojekts/public/pictures')))
 
-// Middleware to check admin role
+
 function checkAdmin(req, res, next) {
-  // Fallback for testing: if header is missing, we pretend it's an admin
-  // REMOVE OR ADJUST FOR PRODUCTION
   const idlomas = parseInt(req.headers['x-user-role'], 10) || 2;
 
   if (idlomas !== 2) {
-    return res.status(403).json({ success: false, message: 'Access denied. Admins only' })
+    return res.status(403).json({ success: false, message: 'Tikai administratoriem.' })
   }
   next()
 }
 
-// ------------------ ADMINDB Backend Routes ------------------
-
-// Get all users (admin only)
+// adminDB
 app.get('/users', checkAdmin, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM lietotajs')
     res.json(rows)
   } catch (err) {
-    console.error('Database query error!', err)
-    res.status(500).json({ success: false, message: 'Database error' })
+    console.error('Datubāzes kļūda!', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 });
 
-// Update a user by ID (admin only)
 app.put('/users/:id', checkAdmin, async (req, res) => {
   const { id } = req.params
   const { vards, epasts, parole, idlomas } = req.body
 
   if (!vards || !epasts || !parole || !idlomas) {
-    return res.status(400).json({ success: false, message: 'All fields are required' })
+    return res.status(400).json({ success: false, message: 'Visi lauki ir jaizpilda' })
   }
 
   try {
@@ -51,35 +46,34 @@ app.put('/users/:id', checkAdmin, async (req, res) => {
       [vards, epasts, parole, idlomas, id]
     )
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'User not found' })
+      return res.status(404).json({ success: false, message: 'lietotajs nav atrasts' })
     }
-    res.json({ success: true, message: 'User updated successfully' })
+    res.json({ success: true, message: 'lietotajs atjauninats' })
   } catch (err) {
     console.error(err)
-    res.status(500).json({ success: false, message: 'Database error updating user' })
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 });
-
-// Delete a user by ID (admin only)
+// dzest lietotāju
 app.delete('/users/:id', checkAdmin, async (req, res) => {
   const { id } = req.params
 
   try {
     const [result] = await db.query('DELETE FROM lietotajs WHERE idlietotajs = ? LIMIT 1', [id])
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'User not found' })
+      return res.status(404).json({ success: false, message: 'lietotajs nav atrasts' })
     }
-    res.json({ success: true, message: 'User deleted successfully' })
+    res.json({ success: true, message: 'Lietotajs izdzests' })
   } catch (err) {
     console.error(err)
-    res.status(500).json({ success: false, message: 'Database error' })
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 });
 
-// Get site stats (admin only)
+// iegut statistiku
 app.get('/api/stats', checkAdmin, async (req, res) => {
   try {
-    // Adjust table names as needed
+
     const [spotsCount] = await db.query('SELECT COUNT(*) AS count FROM apskatespunkti')
     const [usersCount] = await db.query('SELECT COUNT(*) AS count FROM lietotajs')
     const [reviewsCount] = await db.query('SELECT COUNT(*) AS count FROM atsauksmes')
@@ -90,14 +84,12 @@ app.get('/api/stats', checkAdmin, async (req, res) => {
       reviewCount: reviewsCount[0].count,
     })
   } catch (err) {
-    console.error('Database error fetching stats', err)
-    res.status(500).json({ success: false, message: 'Database error fetching stats' })
+    console.error('Datubāzes kļūda', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 })
 
-// ------------------ Your Existing Routes ------------------
-
-// Get apskatespunkti with image URLs
+// iegut attēlus
 app.get('/api/apskatespunkti', async (req, res) => {
   try {
     const [rows] = await db.query(`
@@ -116,17 +108,17 @@ app.get('/api/apskatespunkti', async (req, res) => {
 
     res.json(dataWithFullImage)
   } catch (err) {
-    console.error('Database query error!', err)
-    res.status(500).json({ success: false, message: 'Database error fetching apskatespunkti' })
+    console.error('Datubāzes kļūda!', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda apskatot apskatespunkti' })
   }
 })
 
-// User login
+// login
 app.post('/api/login', async (req, res) => {
   const { epasts, parole } = req.body
 
   if (!epasts || !parole) {
-    return res.status(400).json({ success: false, message: 'Email and password are required' })
+    return res.status(400).json({ success: false, message: 'Vajadzigs epasts un parole' })
   }
 
   try {
@@ -136,42 +128,42 @@ app.post('/api/login', async (req, res) => {
     )
 
     if (rows.length === 0 || rows[0].parole !== parole) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' })
+      return res.status(401).json({ success: false, message: 'Nepareizi ievaditie dati' })
     }
 
     res.json({ success: true, role: rows[0].idlomas, vards: rows[0].vards, userId: rows[0].idlietotajs })
   } catch (error) {
     console.error(error)
-    res.status(500).json({ success: false, message: 'Server error' })
+    res.status(500).json({ success: false, message: 'Servera kluda' })
   }
 })
 
-// User registration
+// registrācija
 app.post('/api/Register', async (req, res) => {
   const { vards, epasts, parole } = req.body
 
   if (!vards || !epasts || !parole) {
-    return res.status(400).json({ success: false, message: 'All fields are required' })
+    return res.status(400).json({ success: false, message: 'Jaizpilda visi lauki' })
   }
 
   try {
     const [existing] = await db.query('SELECT epasts FROM lietotajs WHERE epasts = ?', [epasts])
     if (existing.length > 0) {
-      return res.status(409).json({ success: false, message: 'Email already registered' })
+      return res.status(409).json({ success: false, message: 'Epasts jau pieregistrets' })
     }
 
     await db.query(
       'INSERT INTO lietotajs (vards, epasts, parole) VALUES (?, ?, ?)', [vards, epasts, parole]
     )
 
-    res.status(201).json({ success: true, message: 'User registered successfully' })
+    res.status(201).json({ success: true, message: 'Lietotajs atjauninats' })
   } catch (error) {
     console.error(error)
-    res.status(500).json({ success: false, message: 'Server error' })
+    res.status(500).json({ success: false, message: 'Servera kluda' })
   }
 })
 
-// Get reviews for a spot
+// atsauksmes
 app.get('/api/atsauksmes/:idapskatespunkti', async (req, res) => {
   const { idapskatespunkti } = req.params
   try {
@@ -185,17 +177,17 @@ app.get('/api/atsauksmes/:idapskatespunkti', async (req, res) => {
     )
     res.json(rows)
   } catch (err) {
-    console.error('Database error!', err)
-    res.status(500).json({ success: false, message: 'Database error fetching reviews' })
+    console.error('Datubāzes kļūda', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 })
 
-// Add new review
+// jaunas atsauksmes
 app.post('/api/atsauksmes', async (req, res) => {
   const { vertejums, komentars, idlietotajs, idapskatespunkti } = req.body
 
   if (!vertejums || !komentars || !idlietotajs || !idapskatespunkti) {
-    return res.status(400).json({ success: false, message: 'All fields are required' })
+    return res.status(400).json({ success: false, message: 'Jaizpilda visi lauki' })
   }
 
   try {
@@ -204,30 +196,29 @@ app.post('/api/atsauksmes', async (req, res) => {
        VALUES (?, ?, NOW(), ?, ?)`,
       [vertejums, komentars, idlietotajs, idapskatespunkti]
     )
-    res.status(201).json({ success: true, message: 'Review added successfully' })
+    res.status(201).json({ success: true, message: 'Atsauksme pievienots.' })
   } catch (err) {
     console.error(err)
-    res.status(500).json({ success: false, message: 'Database error adding review' })
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda pievienojot atsauksmi' })
   }
 })
 
-// DELETE review by id
+// dzest atsauksmi
 app.delete('/api/atsauksmes/:id', async (req, res) => {
   const { id } = req.params
 
   try {
     const [result] = await db.query('DELETE FROM atsauksmes WHERE idatsauksmes = ? LIMIT 1', [id])
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'Review not found' })
+      return res.status(404).json({ success: false, message: 'Atsauskme nav atrasta' })
     }
-    res.json({ success: true, message: 'Review deleted successfully' })
+    res.json({ success: true, message: 'Atsauksme izdzesta' })
   } catch (err) {
-    console.error('Error deleting review', err)
-    res.status(500).json({ success: false, message: 'Database error deleting review' })
+    console.error('Datubāzes kļūda', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 })
-
-// Get saved spots for a user
+// saglabāt apskates punktus
 app.get('/api/savedspots/:idlietotajs', async (req, res) => {
   const { idlietotajs } = req.params
   try {
@@ -266,17 +257,16 @@ app.get('/api/savedspots/:idlietotajs', async (req, res) => {
 
     res.json(transformed)
   } catch (err) {
-    console.error('Error fetching saved spots!', err)
-    res.status(500).json({ success: false, message: 'Database error fetching saved spots' })
+    console.error('Datubāzes kļūda', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 })
 
-// Save a spot
 app.post('/api/savedspots', async (req, res) => {
   const { idlietotajs, idapskatespunkti } = req.body
 
   if (!idlietotajs || !idapskatespunkti) {
-    return res.status(400).json({ success: false, message: 'Missing required fields' })
+    return res.status(400).json({ success: false, message: 'Jaizpilda visi lauki' })
   }
 
   try {
@@ -285,20 +275,20 @@ app.post('/api/savedspots', async (req, res) => {
        VALUES ('', NOW(), ?, ?)`,
       [idlietotajs, idapskatespunkti]
     )
-    res.status(201).json({ success: true, message: 'Spot saved' })
+    res.status(201).json({ success: true, message: 'Saglabats' })
   } catch (err) {
-    console.error('Error saving spot!', err)
-    res.status(500).json({ success: false, message: 'Database error saving spot' })
+    console.error('Datubāzes kļūda', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 })
 
-// Update notes for saved spot
+// piezimes apskates punktiem
 app.put('/api/savedspots/:id', async (req, res) => {
   const { id } = req.params
   const { piezimes } = req.body
 
   if (piezimes === undefined) {
-    return res.status(400).json({ success: false, message: 'Notes are required' })
+    return res.status(400).json({ success: false, message: 'Vajadzigas piezimes' })
   }
 
   try {
@@ -307,32 +297,31 @@ app.put('/api/savedspots/:id', async (req, res) => {
       [piezimes, id]
     )
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'Saved spot not found' })
+      return res.status(404).json({ success: false, message: 'Saglabatais objekts nav atrasts' })
     }
-    res.json({ success: true, message: 'Notes updated' })
+    res.json({ success: true, message: 'Piezimes atjauninatas' })
   } catch (err) {
-    console.error('Error updating notes', err)
-    res.status(500).json({ success: false, message: 'Database error updating notes' })
+    console.error('Datubāzes kļūda', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 })
 
-// DELETE saved spot
+// dzest saglabātos apskates punktus
 app.delete('/api/savedspots/:id', async (req, res) => {
   const { id } = req.params
 
   try {
     const [result] = await db.query('DELETE FROM saglabatieobjekti WHERE idsaglabatieobjekti = ? LIMIT 1', [id])
     if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: 'Saved spot not found' })
+      return res.status(404).json({ success: false, message: 'Datubāzes kļūda' })
     }
-    res.json({ success: true, message: 'Saved spot deleted' })
+    res.json({ success: true, message: 'Saglabatais objekts izdzests' })
   } catch (err) {
-    console.error('Error deleting saved spot', err)
-    res.status(500).json({ success: false, message: 'Database error deleting saved spot' })
+    console.error('Datubāzes kļūda', err)
+    res.status(500).json({ success: false, message: 'Datubāzes kļūda' })
   }
 })
 
-// Start server
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)

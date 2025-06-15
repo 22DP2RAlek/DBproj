@@ -17,20 +17,20 @@ const handleLogout = () => {
 
       <!-- Left buttons -->
       <div class="left-buttons">
-        <!-- If logged in -->
+        <!-- Piesledzies -->
         <template v-if="isLoggedIn">
           <span class="user-name">Hello, {{ userName }}!</span>
           <button class="btn logout-btn" @click="handleLogout">Logout</button>
         </template>
 
-        <!-- If not logged in -->
+        <!-- Nav piesledzies-->
         <template v-else>
           <router-link class="btn" to="/login">Login</router-link>
           <router-link class="btn" to="/register">Register</router-link>
         </template>
       </div>
 
-      <!-- Hamburger input & label -->
+      <!-- Hamburger -->
       <input id="toggle1" type="checkbox" />
       <label class="hamburger1" for="toggle1" aria-label="Toggle navigation menu">
         <div class="top"></div>
@@ -38,7 +38,7 @@ const handleLogout = () => {
         <div class="bottom"></div>
       </label>
 
-      <!-- Dropdown menu -->
+      <!-- Navigacijas linki -->
       <div class="menu1">
         <router-link to="/">Sākums</router-link>
         <router-link to="/map">Karte</router-link>
